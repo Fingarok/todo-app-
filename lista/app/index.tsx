@@ -90,6 +90,21 @@ export default function Index() {
         console.log(erro);
       }
      }
+     const handleDone = async(id:number) => {
+      try {
+        const newTodos = todos.map((todo) => {
+          if (todo.id === id){
+            todo.isDone = !todo.isDone;
+          }
+          return todo;
+        });
+         await AsyncStorage.setItem('my-todo',JSON.stringify(newTodos));
+         setTodos(newTodos);
+      }catch(erro){
+        console.log(erro);
+      }
+
+     }
 
   <Stack.Screen options ={{title:'Lista'}}/>
   return (
@@ -121,7 +136,7 @@ export default function Index() {
         data={todos}
         keyExtractor={(item)=>item.id.toString()} 
         renderItem={({item}) =>(    
-          <ToDoItem todo={item} deleteTodo={deleteTodo}/>
+          <ToDoItem todo={item} deleteTodo={deleteTodo} handleTodo = {handleDone}/>
       )}
       />
         
@@ -148,10 +163,14 @@ export default function Index() {
   );
 }
 
-const ToDoItem = ({todo,deleteTodo}:{todo:ToDoType, deleteTodo:(id:number)=> void}) =>(
+const ToDoItem = ({todo,deleteTodo,handleTodo}:{todo:ToDoType,
+       deleteTodo:(id:number)=> void;
+       handleTodo:(id:number)=> void;
+      }) =>(
       <View style={style.todoContainer}>
           <View style={style.todoInfoContainer}>
             <Checkbox value={todo.isDone} 
+                      onValueChange={() => handleTodo(todo.id)}
                       color={todo.isDone ?'#7e0793ff': undefined}/>
             <Text style={[style.todoText,
               todo.isDone && {textDecorationLine:'line-through'}]}
